@@ -35,13 +35,15 @@ jobs:
           echo "    target = 9" >> scripts/find_target.py
           echo "    result = find_target(nums, target)" >> scripts/find_target.py
           echo "    print('Indices of numbers that add up to target:', result)" >> scripts/find_target.py
+          echo "import datetime" >> scripts/find_target.py
+          echo "print('Script last modified at:', datetime.datetime.now())" >> scripts/find_target.py
 
       - name: Commit and push to a new branch
         run: |
           BRANCH_NAME=find-target-pr-$(date +%s)
           git checkout -b $BRANCH_NAME
           git add scripts/find_target.py
-          git commit -m "Add find_target script"
+          git commit -m "Add find_target script" || echo "No changes to commit"
           git push origin $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
