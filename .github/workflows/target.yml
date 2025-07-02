@@ -1,4 +1,4 @@
-name: Auto PR Creator
+name: Auto PR - Hello World Script
 
 on:
   workflow_dispatch:
@@ -20,18 +20,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Create Python script
+      - name: Create Hello World Python script
         run: |
-          mkdir -p scripts
-          echo "def add(a, b): return a + b" > scripts/addition.py
-          echo "if __name__ == '__main__': print(add(2, 3))" >> scripts/addition.py
+          mkdir -p hello
+          echo "print('Hello, World!')" > hello/hello_world.py
 
-      - name: Commit and push
+      - name: Commit and push to new branch
         run: |
-          BRANCH=find-target-pr-$(date +%s)
+          BRANCH=hello-world-pr-$(date +%s)
           git checkout -b $BRANCH
-          git add scripts/addition.py
-          git commit -m "Add addition script"
+          git add hello/hello_world.py
+          git commit -m "Add hello world script"
           git push origin $BRANCH
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
@@ -39,7 +38,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Auto PR - Addition Script"
-          body: "This PR adds a simple addition Python script."
+          title: "Auto PR - Hello World Script"
+          body: "This PR adds a basic Hello World Python script."
           base: main
           branch: ${{ env.BRANCH }}
