@@ -1,0 +1,55 @@
+name: Auto Code PR
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create a Python script safely
+        run: |
+          mkdir -p scripts
+          echo "def find_target(nums, target):" > scripts/find_target.py
+          echo "    for i in range(len(nums)):" >> scripts/find_target.py
+          echo "        for j in range(i + 1, len(nums)):" >> scripts/find_target.py
+          echo "            if nums[i] + nums[j] == target:" >> scripts/find_target.py
+          echo "                return [i, j]" >> scripts/find_target.py
+          echo "    return []" >> scripts/find_target.py
+          echo "" >> scripts/find_target.py
+          echo "if __name__ == '__main__':" >> scripts/find_target.py
+          echo "    nums = [2, 7, 11, 15]" >> scripts/find_target.py
+          echo "    target = 9" >> scripts/find_target.py
+          echo "    result = find_target(nums, target)" >> scripts/find_target.py
+          echo "    print('Indices of numbers that add up to target:', result)" >> scripts/find_target.py
+
+      - name: Commit and push to a new branch
+        run: |
+          BRANCH_NAME=find-target-pr-$(date +%s)
+          git checkout -b $BRANCH_NAME
+          git add scripts/find_target.py
+          git commit -m "Add find_target script"
+          git push origin $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Add find_target.py"
+          body: "This PR adds a Python script to find two indices that sum to the target value."
+          base: main
+          branch: ${{ env.BRANCH_NAME }}
