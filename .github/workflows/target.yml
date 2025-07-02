@@ -42,7 +42,7 @@ jobs:
         run: |
           BRANCH_NAME=find-target-pr-$(date +%s)
           git checkout -b $BRANCH_NAME
-          git add scripts/find_target.py
+          git add scripts/find_target.py  # Add only the new script, nothing else
           git commit -m "Add find_target script with timestamp"
           git push origin $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
