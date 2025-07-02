@@ -42,8 +42,13 @@ jobs:
         run: |
           BRANCH_NAME=find-target-pr-$(date +%s)
           git checkout -b $BRANCH_NAME
-          git add scripts/find_target.py  # Add only the new script, nothing else
-          git commit -m "Add find_target script with timestamp"
+
+          # ❌ UNSTAGE any accidentally modified workflow files
+          git restore --staged .github/workflows/demo.yml || true
+
+          # ✅ Only commit the script
+          git add scripts/find_target.py
+          git commit -m "Add find_target script with timestamp" || echo "No changes to commit"
           git push origin $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
