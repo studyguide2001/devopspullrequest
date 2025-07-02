@@ -1,7 +1,7 @@
-name: Auto PR - Hello World Script
+name: Auto Code PR
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Allows you to manually trigger the workflow
 
 permissions:
   contents: write
@@ -20,25 +20,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Create Hello World Python script
+      - name: Create changes
         run: |
-          mkdir -p hello
-          echo "print('Hello, World!')" > hello/hello_world.py
+          mkdir -p scripts
+          echo "print('Hello from GitHub Actions!')" > scripts/hello.py
 
-      - name: Commit and push to new branch
+      - name: Commit and push changes
         run: |
-          BRANCH=hello-world-pr-$(date +%s)
-          git checkout -b $BRANCH
-          git add hello/hello_world.py
-          git commit -m "Add hello world script"
-          git push origin $BRANCH
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          git checkout -b auto-pr-branch
+          git add scripts/hello.py
+          git commit -m "chore: add hello.py"
+          git push origin auto-pr-branch
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Auto PR - Hello World Script"
-          body: "This PR adds a basic Hello World Python script."
+          title: "Auto PR: Add hello.py"
+          body: "This PR was created automatically by a GitHub Action."
+          head: auto-pr-branch
           base: main
-          branch: ${{ env.BRANCH }}
