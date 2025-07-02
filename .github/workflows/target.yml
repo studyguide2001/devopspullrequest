@@ -1,18 +1,18 @@
-name: Auto Code PR
+name: Auto PR on macOS
 
 on:
-  workflow_dispatch: # Allows you to manually trigger the workflow
+  workflow_dispatch:  # Allows you to run manually
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  create-pr:
-    runs-on: ubuntu-latest
+  auto-pr:
+    runs-on: macos-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Git
@@ -20,23 +20,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Create changes
+      - name: Modify hello.py
         run: |
-          mkdir -p scripts
-          echo "print('Hello from GitHub Actions!')" > scripts/hello.py
+          echo "# Auto update on $(date)" >> hello.py
 
-      - name: Commit and push changes
+      - name: Create and push branch
         run: |
           git checkout -b auto-pr-branch
-          git add scripts/hello.py
-          git commit -m "chore: add hello.py"
+          git add hello.py
+          git commit -m "chore: auto update hello.py"
           git push origin auto-pr-branch
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Auto PR: Add hello.py"
-          body: "This PR was created automatically by a GitHub Action."
+          title: "Auto PR: Update hello.py"
+          body: "This PR was created automatically by a GitHub Action running on macOS."
           head: auto-pr-branch
           base: main
